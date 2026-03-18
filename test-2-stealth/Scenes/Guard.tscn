@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://b7di7rf50bcpt"]
+
+[ext_resource type="Script" uid="uid://bduox4tllmoti" path="res://Assets/Scripts/guard.gd" id="1_nxfph"]
+[ext_resource type="Texture2D" uid="uid://1v7j5kblhmy8" path="res://icon.svg" id="2_gtyxt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qym4e"]
+
+[node name="Guard" type="CharacterBody2D"]
+script = ExtResource("1_nxfph")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(150, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_qym4e")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(298, 118)
+texture = ExtResource("2_gtyxt")
