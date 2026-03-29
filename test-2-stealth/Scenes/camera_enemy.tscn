@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://kl4gxivcda3u"]
+
+[ext_resource type="Script" uid="uid://cad8o4s5vtkf5" path="res://camera_enemy.gd" id="1_p72a0"]
+[ext_resource type="Texture2D" uid="uid://1v7j5kblhmy8" path="res://icon.svg" id="2_dh11n"]
+
+[node name="Camera Enemy" type="Node2D"]
+script = ExtResource("1_p72a0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(200, 50)
+
+[node name="Icon" type="Sprite2D" parent="."]
+position = Vector2(215.75, 146.75)
+scale = Vector2(1.17578, 0.136719)
+texture = ExtResource("2_dh11n")

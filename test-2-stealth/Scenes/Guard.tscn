@@ -4,16 +4,19 @@
 [ext_resource type="Texture2D" uid="uid://1v7j5kblhmy8" path="res://icon.svg" id="2_gtyxt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qym4e"]
+size = Vector2(103, 216)
 
 [node name="Guard" type="CharacterBody2D"]
 script = ExtResource("1_nxfph")
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
-target_position = Vector2(150, 0)
+target_position = Vector2(100, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(308.5, 70)
 shape = SubResource("RectangleShape2D_qym4e")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(298, 118)
+position = Vector2(307.5, 71.5)
+scale = Vector2(0.851563, 1.72656)
 texture = ExtResource("2_gtyxt")
