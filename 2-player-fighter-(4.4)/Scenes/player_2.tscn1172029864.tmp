@@ -1,0 +1,83 @@
+[gd_scene load_steps=13 format=3 uid="uid://ggrif3knyemw"]
+
+[ext_resource type="Script" uid="uid://bw7kju6n3klog" path="res://Scenes/player_2.gd" id="1_cgts5"]
+[ext_resource type="Texture2D" uid="uid://dphpw0l0g24im" path="res://Assets/Sprite sheets/TheDarkRedOne/TheDarkRedOne/Idle.png" id="1_mkara"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cgts5"]
+size = Vector2(31, 53)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a3adp"]
+atlas = ExtResource("1_mkara")
+region = Rect2(0, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n0kdt"]
+atlas = ExtResource("1_mkara")
+region = Rect2(200, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eus2p"]
+atlas = ExtResource("1_mkara")
+region = Rect2(400, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6cafw"]
+atlas = ExtResource("1_mkara")
+region = Rect2(600, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mtyrt"]
+atlas = ExtResource("1_mkara")
+region = Rect2(800, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bth63"]
+atlas = ExtResource("1_mkara")
+region = Rect2(1000, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8os5a"]
+atlas = ExtResource("1_mkara")
+region = Rect2(1200, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dgubp"]
+atlas = ExtResource("1_mkara")
+region = Rect2(1400, 0, 200, 200)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_os74a"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a3adp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n0kdt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eus2p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6cafw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mtyrt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bth63")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8os5a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dgubp")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}]
+
+[node name="Player_2" type="CharacterBody2D"]
+script = ExtResource("1_cgts5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(322.5, 139.5)
+shape = SubResource("RectangleShape2D_cgts5")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(325, 144)
+sprite_frames = SubResource("SpriteFrames_os74a")
+animation = &"Idle"

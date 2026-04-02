@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://cvli1y26ai7bv"]
+
+[ext_resource type="Script" uid="uid://bl4gfrktqvmcp" path="res://dash_effect.gd" id="1_xkuyi"]
+[ext_resource type="Texture2D" uid="uid://dm32tis16epbt" path="res://Assets/Sprite sheets/Pixel Art VFX - Smoke&Dust - Free Version/VFX1/sprite-sheet.png" id="2_id2q2"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0sory"]
+atlas = ExtResource("2_id2q2")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yuggj"]
+atlas = ExtResource("2_id2q2")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pkym6"]
+atlas = ExtResource("2_id2q2")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1qwxs"]
+atlas = ExtResource("2_id2q2")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cp8ia"]
+atlas = ExtResource("2_id2q2")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1tai2"]
+atlas = ExtResource("2_id2q2")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xh6n4"]
+atlas = ExtResource("2_id2q2")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hw78b"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0sory")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yuggj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pkym6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1qwxs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cp8ia")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1tai2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xh6n4")
+}],
+"loop": true,
+"name": &"Effect",
+"speed": 10.0
+}]
+
+[node name="DashEffect" type="Node2D" unique_id=2017163047]
+script = ExtResource("1_xkuyi")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1365133346]
+texture_filter = 1
+position = Vector2(362, 213)
+sprite_frames = SubResource("SpriteFrames_hw78b")
+animation = &"Effect"
+autoplay = "Effect"
+frame = 1
+frame_progress = 0.6808753
+
+[node name="Timer" type="Timer" parent="." unique_id=1651094238]
+wait_time = 0.2
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
