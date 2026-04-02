@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bwk0bksdycwkl"]
+[gd_scene load_steps=15 format=3 uid="uid://bwk0bksdycwkl"]
 
 [ext_resource type="Script" uid="uid://dnv3h67vowc6v" path="res://Assets/Scripts/Player.gd" id="1_v0iea"]
 [ext_resource type="Texture2D" uid="uid://b82ko1p874m64" path="res://Assets/Sprite sheets/NeonPhantom/Idle.png" id="2_cvnsp"]
@@ -75,7 +75,14 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6t5aa"]
+size = Vector2(30, 39)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vgqql"]
+size = Vector2(42, 39)
+
 [node name="Player" type="CharacterBody2D"]
+texture_filter = 1
 script = ExtResource("1_v0iea")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -87,3 +94,16 @@ position = Vector2(420, 214)
 sprite_frames = SubResource("SpriteFrames_gymyn")
 animation = &"Idle"
 autoplay = "Idle"
+
+[node name="LightAttack" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LightAttack"]
+position = Vector2(448, 210.5)
+shape = SubResource("RectangleShape2D_6t5aa")
+disabled = true
+
+[node name="HeavyAttack" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyAttack"]
+position = Vector2(454, 210.5)
+shape = SubResource("RectangleShape2D_vgqql")

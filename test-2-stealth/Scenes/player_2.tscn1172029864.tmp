@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://ggrif3knyemw"]
+[gd_scene load_steps=13 format=3 uid="uid://ggrif3knyemw"]
 
 [ext_resource type="Script" uid="uid://bw7kju6n3klog" path="res://Scenes/player_2.gd" id="1_cgts5"]
 [ext_resource type="Texture2D" uid="uid://dphpw0l0g24im" path="res://Assets/Sprite sheets/TheDarkRedOne/TheDarkRedOne/Idle.png" id="1_mkara"]
@@ -70,14 +70,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_a3adp"]
-size = Vector2(36.5, 34)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_n0kdt"]
-size = Vector2(44, 34)
-
 [node name="Player_2" type="CharacterBody2D"]
-texture_filter = 1
 script = ExtResource("1_cgts5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -88,16 +81,3 @@ shape = SubResource("RectangleShape2D_cgts5")
 position = Vector2(325, 144)
 sprite_frames = SubResource("SpriteFrames_os74a")
 animation = &"Idle"
-
-[node name="LightAttack" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LightAttack"]
-position = Vector2(356.75, 143)
-shape = SubResource("RectangleShape2D_a3adp")
-
-[node name="HeavyAttack" type="Area2D" parent="."]
-monitoring = false
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyAttack"]
-position = Vector2(360, 143)
-shape = SubResource("RectangleShape2D_n0kdt")

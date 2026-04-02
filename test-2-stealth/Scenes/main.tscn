@@ -1,27 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://bhrcyrlpkeiue"]
+[gd_scene load_steps=4 format=3 uid="uid://bhrcyrlpkeiue"]
 
 [ext_resource type="PackedScene" uid="uid://ggrif3knyemw" path="res://Scenes/player_2.tscn" id="2_bo1nx"]
+[ext_resource type="PackedScene" uid="uid://c0qwkb4ybcpvg" path="res://Scenes/level.tscn" id="3_8gbba"]
 [ext_resource type="PackedScene" uid="uid://bwk0bksdycwkl" path="res://Scenes/player.tscn" id="7_jkdf5"]
 
-[sub_resource type="TileSet" id="TileSet_ee4r6"]
-physics_layer_0/collision_layer = 1
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_jjvhh"]
-size = Vector2(994, 119)
-
 [node name="Main" type="Node2D"]
-
-[node name="TileMapLayer" type="TileMapLayer" parent="."]
-texture_filter = 1
-tile_set = SubResource("TileSet_ee4r6")
-
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(725, 372.5)
-shape = SubResource("RectangleShape2D_jjvhh")
 
 [node name="Player" parent="." instance=ExtResource("7_jkdf5")]
 position = Vector2(206, -78)
 
 [node name="Player_2" parent="." instance=ExtResource("2_bo1nx")]
+
+[node name="Level" parent="." instance=ExtResource("3_8gbba")]
+position = Vector2(-97, 172)
