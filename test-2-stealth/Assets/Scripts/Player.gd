@@ -1,15 +1,9 @@
 extends CharacterBody2D
 
-# --------------------
-# MOVEMENT
-# --------------------
 const SPEED = 200
 const JUMP_FORCE = -400
-const GRAVITY = 900
+const GRAVITY = 800
 
-# --------------------
-# DASH
-# --------------------
 const DASH_SPEED = 600
 const DASH_TIME = 0.15
 const DASH_COOLDOWN = 0.5
@@ -19,148 +13,119 @@ var can_dash = true
 var dash_time_left = 0.0
 var dash_cooldown_left = 0.0
 var dash_direction = 1
-@onready var dash_effect_scene = preload("res://Scenes/dash_effect.tscn")
-# --------------------
-# ATTACKS
-# --------------------
+
 var attacking = false
+var current_attack = ""
+var current_anim = ""
 
 @onready var light_hitbox = $LightAttack
 @onready var heavy_hitbox = $HeavyAttack
-@onready var anim = get_node_or_null("AnimationPlayer")
-@onready var sprite = $Sprite2D
+@onready var sprite = $AnimatedSprite2D
 
-# --------------------
-# FACING
-# --------------------
-var facing = 1  # 1 = right, -1 = left
+var facing = 1
 
-# --------------------
-# MAIN LOOP
-# --------------------
 func _physics_process(delta):
 
-	# --- GRAVITY ---
+	# Gravity
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 
-	# --- INPUT ---
 	var dir = Input.get_axis("Left", "Right")
 
-	# --- UPDATE FACING ---
+	# Facing
 	if dir != 0:
 		facing = dir
 		sprite.flip_h = facing < 0
 
-	# --- JUMP ---
+	# Jump
 	if Input.is_action_just_pressed("Jump") and is_on_floor():
 		velocity.y = JUMP_FORCE
 
-	# --- DASH INPUT ---
+	# Dash
 	if Input.is_action_just_pressed("Dash") and can_dash:
 		start_dash()
 
-	# --- DASH MOVEMENT ---
+	# Dash movement
 	if is_dashing:
 		velocity.x = dash_direction * DASH_SPEED
 		dash_time_left -= delta
-
 		if dash_time_left <= 0:
 			is_dashing = false
 
-	# --- NORMAL MOVEMENT ---
+	# Movement
 	if not is_dashing:
 		if dir != 0:
 			velocity.x = dir * SPEED
 		else:
 			velocity.x = move_toward(velocity.x, 0, 1000 * delta)
 
-	# --- DASH COOLDOWN ---
+	# Dash cooldown
 	if not can_dash:
 		dash_cooldown_left -= delta
 		if dash_cooldown_left <= 0:
 			can_dash = true
 
-	# --- ATTACKS ---
+	# Attacks
 	if Input.is_action_just_pressed("Light_Attack") and not attacking:
-		attack(light_hitbox, 0.2, "Light_Attack")
+		current_attack = "Light_Attack"
+		attack(light_hitbox, 0.2)
 
 	if Input.is_action_just_pressed("Heavy_Attack") and not attacking:
-		attack(heavy_hitbox, 0.4, "Heavy_Attack")
+		current_attack = "Heavy_Attack"
+		attack(heavy_hitbox, 0.5)
 
-	# --- ANIMATION ---
 	update_animation(dir)
-
 	move_and_slide()
 
-# --------------------
-# DASH
-# --------------------
 func start_dash():
 	is_dashing = true
 	can_dash = false
 
-	spawn_dash_effect()
-
 	dash_time_left = DASH_TIME
 	dash_cooldown_left = DASH_COOLDOWN
-
 	dash_direction = facing
 
-	play_anim("dash")
-
-func spawn_dash_effect():
-	var effect = dash_effect_scene.instantiate()
-	get_parent().add_child(effect)
-	effect.global_position = global_position
-# --------------------
-# ATTACK
-# --------------------
-func attack(hitbox: Area2D, duration: float, anim_name: String):
+func attack(hitbox: Area2D, duration: float):
 	attacking = true
-	play_anim(anim_name)
-
 	hitbox.monitoring = true
-	await get_tree().create_timer(duration).timeout
-	hitbox.monitoring = false
 
+	var t = get_tree().create_timer(duration)
+	await t.timeout
+
+	hitbox.monitoring = false
 	attacking = false
 
-# --------------------
-# KNOCKBACK
-# --------------------
-func take_hit(attacker_pos: Vector2):
-	var direction = sign(global_position.x - attacker_pos.x)
-	velocity.x = direction * 400
-	velocity.y = -250
-
-# --------------------
-# ANIMATION LOGIC
-# --------------------
 func update_animation(dir):
 
 	if attacking:
+		play_anim(current_attack)
 		return
 
 	if is_dashing:
-		play_anim("dash")
+		play_anim("Dash")
 		return
 
 	if not is_on_floor():
-		play_anim("jump")
+		play_anim("Jump")
 		return
 
 	if dir != 0:
-		play_anim("run")
+		play_anim("Run")
 	else:
-		play_anim("idle")
+		play_anim("Idle")
 
-# --------------------
-# SAFE ANIMATION PLAY
-# --------------------
-func play_anim(_String):
-	if anim == null:
+func play_anim(name: String):
+	if sprite.animation == name and sprite.is_playing():
 		return
 		
-	if anim.current_animation != name:
-		anim.play(name)
+	sprite.play(name)
+	sprite.speed_scale = 1.0   # force fix
+
+# Hit detection
+func _on_light_attack_body_entered(body):
+	if body != self and body.is_in_group("player"):
+		body.take_hit(global_position)
+
+func _on_heavy_attack_body_entered(body):
+	if body != self and body.is_in_group("player"):
+		body.take_hit(global_position + Vector2(-200 * facing, 0))

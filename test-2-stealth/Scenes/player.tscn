@@ -132,11 +132,6 @@ region = Rect2(1400, 0, 200, 200)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_gymyn"]
 animations = [{
-"frames": [],
-"loop": true,
-"name": &"Dash",
-"speed": 5.0
-}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gymyn")
@@ -156,9 +151,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_fd4e3")
 }],
-"loop": true,
+"loop": false,
 "name": &"Heavy_Attack",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -219,9 +214,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_2ijsl")
 }],
-"loop": true,
+"loop": false,
 "name": &"Light_Attack",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -267,13 +262,16 @@ script = ExtResource("1_v0iea")
 position = Vector2(419.5, 210)
 shape = SubResource("RectangleShape2D_cvnsp")
 
-[node name="AnimationPlayer" type="AnimatedSprite2D" parent="." unique_id=1456254953]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1456254953]
+process_mode = 3
 position = Vector2(420, 214)
 sprite_frames = SubResource("SpriteFrames_gymyn")
-animation = &"Light_Attack"
+animation = &"Heavy_Attack"
 autoplay = "Idle"
+frame = 5
 
 [node name="LightAttack" type="Area2D" parent="." unique_id=1167059348]
+monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LightAttack" unique_id=1746106397]
 position = Vector2(448, 210.5)
@@ -281,7 +279,11 @@ shape = SubResource("RectangleShape2D_6t5aa")
 disabled = true
 
 [node name="HeavyAttack" type="Area2D" parent="." unique_id=2106499331]
+monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyAttack" unique_id=1083169436]
 position = Vector2(454, 210.5)
 shape = SubResource("RectangleShape2D_vgqql")
+
+[connection signal="body_entered" from="LightAttack" to="." method="_on_light_attack_body_entered"]
+[connection signal="body_entered" from="HeavyAttack" to="." method="_on_heavy_attack_body_entered"]
