@@ -7,8 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://c633vhvdlxx5q" path="res://Assets/Sprite sheets/TheDarkRedOne/TheDarkRedOne/Attack1.png" id="5_bth63"]
 [ext_resource type="Texture2D" uid="uid://cb426ad6dcbpl" path="res://Assets/Sprite sheets/TheDarkRedOne/TheDarkRedOne/Run.png" id="6_8os5a"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_cgts5"]
-size = Vector2(31, 53)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6cafw"]
+size = Vector2(27, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_os74a"]
 atlas = ExtResource("2_6cafw")
@@ -216,7 +216,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"Light_Attack",
-"speed": 10.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -248,39 +248,40 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_a3adp"]
-size = Vector2(36.5, 34)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mtyrt"]
+size = Vector2(110.5, 66.25)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_n0kdt"]
-size = Vector2(44, 34)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bth63"]
+size = Vector2(106, 54)
 
 [node name="Player_2" type="CharacterBody2D" unique_id=638723180]
 texture_filter = 1
 script = ExtResource("1_cgts5")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1578465571]
-position = Vector2(322.5, 139.5)
-shape = SubResource("RectangleShape2D_cgts5")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2139285516]
+position = Vector2(0, -2)
+shape = SubResource("RectangleShape2D_6cafw")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=178229127]
-position = Vector2(325, 144)
 sprite_frames = SubResource("SpriteFrames_os74a")
-animation = &"Heavy_Attack"
+animation = &"Idle"
 autoplay = "Idle"
 
 [node name="LightAttack" type="Area2D" parent="." unique_id=445175289]
+collision_layer = 2
 monitoring = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LightAttack" unique_id=1490702396]
-position = Vector2(356.75, 143)
-shape = SubResource("RectangleShape2D_a3adp")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LightAttack" unique_id=691217042]
+position = Vector2(39.25, -14.875)
+shape = SubResource("RectangleShape2D_mtyrt")
 
 [node name="HeavyAttack" type="Area2D" parent="." unique_id=105090301]
+collision_layer = 2
 monitoring = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyAttack" unique_id=1931700040]
-position = Vector2(360, 143)
-shape = SubResource("RectangleShape2D_n0kdt")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyAttack" unique_id=1467753267]
+position = Vector2(37, -10)
+shape = SubResource("RectangleShape2D_bth63")
 
 [connection signal="body_entered" from="LightAttack" to="." method="_on_light_attack_body_entered"]
 [connection signal="body_entered" from="HeavyAttack" to="." method="_on_heavy_attack_body_entered"]

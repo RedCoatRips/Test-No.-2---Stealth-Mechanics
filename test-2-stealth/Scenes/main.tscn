@@ -2,15 +2,18 @@
 
 [ext_resource type="PackedScene" uid="uid://ggrif3knyemw" path="res://Scenes/player_2.tscn" id="2_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://c0qwkb4ybcpvg" path="res://Scenes/level.tscn" id="3_8gbba"]
+[ext_resource type="PackedScene" uid="uid://dpt36jdnp3py5" path="res://Scenes/ui.tscn" id="4_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://bwk0bksdycwkl" path="res://Scenes/player.tscn" id="7_jkdf5"]
 
 [node name="Main" type="Node2D" unique_id=768375077]
 
 [node name="Player" parent="." unique_id=1228580078 instance=ExtResource("7_jkdf5")]
-position = Vector2(126, 152)
+position = Vector2(514, 374)
 
 [node name="Player_2" parent="." unique_id=707188776 instance=ExtResource("2_bo1nx")]
-position = Vector2(179, -92)
+position = Vector2(785, 155)
 
 [node name="Level" parent="." unique_id=1750105307 instance=ExtResource("3_8gbba")]
 position = Vector2(0, 48)
+
+[node name="UI" parent="." unique_id=1458638597 instance=ExtResource("4_jjvhh")]
