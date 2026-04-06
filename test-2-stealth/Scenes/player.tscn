@@ -265,7 +265,7 @@ shape = SubResource("RectangleShape2D_cvnsp")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1456254953]
 process_mode = 3
 sprite_frames = SubResource("SpriteFrames_gymyn")
-animation = &"Idle"
+animation = &"Light_Attack"
 autoplay = "Idle"
 
 [node name="LightAttack" type="Area2D" parent="." unique_id=1167059348]

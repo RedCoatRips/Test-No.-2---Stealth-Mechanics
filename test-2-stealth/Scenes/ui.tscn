@@ -12,10 +12,22 @@ anchor_bottom = 0.202
 offset_left = 2.0
 offset_top = 601.0
 offset_right = 35.359985
-offset_bottom = 574.56
+offset_bottom = 542.56
+
+[node name="P1_Stocks" type="Label" parent="." unique_id=7290858]
+offset_left = 1.0
+offset_top = 675.0
+offset_right = 321.0
+offset_bottom = 718.0
 
 [node name="P2_Damage" type="Label" parent="." unique_id=1949758155]
 offset_left = 1012.0
 offset_top = 600.0
 offset_right = 1281.0
 offset_bottom = 719.0
+
+[node name="P2_Stocks" type="Label" parent="." unique_id=568985125]
+offset_left = 1093.0
+offset_top = 685.0
+offset_right = 1281.0
+offset_bottom = 718.0

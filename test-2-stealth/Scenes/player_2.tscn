@@ -264,7 +264,7 @@ shape = SubResource("RectangleShape2D_6cafw")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=178229127]
 sprite_frames = SubResource("SpriteFrames_os74a")
-animation = &"Idle"
+animation = &"Light_Attack"
 autoplay = "Idle"
 
 [node name="LightAttack" type="Area2D" parent="." unique_id=445175289]

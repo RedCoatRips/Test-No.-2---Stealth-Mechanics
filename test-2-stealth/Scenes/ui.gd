@@ -2,6 +2,8 @@ extends CanvasLayer
 
 @onready var p1_label = $P1_Damage
 @onready var p2_label = $P2_Damage
+@onready var p1_stocks = $P1_Stocks
+@onready var p2_stocks = $P2_Stocks
 
 var player1 = null
 var player2 = null
@@ -45,3 +47,17 @@ func get_damage_color(dmg):
 
 	else:
 		return Color(1, 0, 0) # Red
+
+# Lives UI
+	if player1 != null:
+		p1_stocks.text = "● ● ●"
+
+	if player2 != null:
+		p2_stocks.text = "● ● ●"
+
+# Win System
+	if player1.stocks <= 0:
+		print("PLAYER 2 WINS")
+
+	if player2.stocks <= 0:
+		print("PLAYER 1 WINS")

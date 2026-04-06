@@ -32,6 +32,11 @@ var hitstun = 0.0 #HitStun
 const HITSTUN_TIME = 0.2
 const CRIT_DAMAGE_THRESHOLD = 100 #Percentage until Crit
 const CRIT_MULTIPLIER = 2.5
+var combo_step = 0 #Combos
+var combo_timer = 0.0
+const COMBO_WINDOW = 0.4
+
+var stocks = 3 #Lives
 @onready var light_hitbox = $LightAttack
 @onready var heavy_hitbox = $HeavyAttack
 @onready var sprite = $AnimatedSprite2D
@@ -109,7 +114,6 @@ func _physics_process(delta):
 
 	# --- ATTACKS ---
 	if Input.is_action_just_pressed("P2_Light_Attack") and not attacking:
-		current_attack = "Light_Attack"
 		attack(light_hitbox, 0.4, "Light_Attack")
 
 	if Input.is_action_just_pressed("P2_Heavy_Attack") and not attacking:
@@ -131,15 +135,32 @@ func _physics_process(delta):
 
 func respawn():
 
-	global_position = Vector2(424, 34)  # spawn point
+	stocks -= 1
+
+	print("Stocks left:", stocks)
+
+	if stocks <= 0:
+		die()
+		return
+
+	# Normal respawn
+	global_position = Vector2(426, 77)
 	velocity = Vector2.ZERO
 
 	damage = 0
 	jumps_left = MAX_JUMPS
 	hitstun = 0
 
-	# Optional: small freeze for effect
 	hit_freeze(0.05)
+
+func die():
+	print("PLAYER OUT")
+
+	# Disable movement
+	set_physics_process(false)
+
+	# Optional: hide player
+	sprite.visible = false
 
 func _ready():
 	light_shape_base_x = light_shape.position.x
@@ -161,26 +182,30 @@ func hit_flash():
 	await get_tree().create_timer(0.08).timeout
 
 	sprite.modulate = Color(1, 1, 1)
+
 #Take Hit
-func take_hit(attacker_pos: Vector2, base_kb_x := 300, base_kb_y := -200, damage_add := 10):
+func take_hit(attacker_pos: Vector2, angle := 45, force := 400, damage_add := 10):
 
 	var direction = sign(global_position.x - attacker_pos.x)
 
-	# --- ADD DAMAGE ---
+	# --- DAMAGE ---
 	damage += damage_add
 
-	# --- BASE SCALING ---
+	# --- SCALE ---
 	var kb_scale = 1.0 + (damage / 120.0)
 
-	# --- HIGH DAMAGE BOOST (SMASH FEEL) ---
 	if damage > 80:
 		kb_scale += (damage - 80) / 100.0
 
-	# --- APPLY KNOCKBACK ---
-	velocity.x = direction * base_kb_x * kb_scale
-	velocity.y = base_kb_y * kb_scale
+	var final_force = force * kb_scale
 
-	# --- HITSTUN SCALES TOO ---
+	# --- CONVERT ANGLE TO VELOCITY ---
+	var rad = deg_to_rad(angle)
+
+	velocity.x = cos(rad) * final_force * direction
+	velocity.y = -sin(rad) * final_force
+
+	# --- HITSTUN ---
 	hitstun = 0.1 + (damage / 200.0)
 
 	hit_flash()
@@ -200,18 +225,17 @@ func attack(hitbox: Area2D, duration: float, anim_name: String):
 
 	attacking = true
 	
-	sprite.stop()
 	sprite.play(anim_name)
 
-	hitbox.monitoring = true 
+	hitbox.monitoring = true
 
-	var t = get_tree().create_timer(duration)
-	await t.timeout
+	await get_tree().create_timer(duration).timeout
 
 	hitbox.monitoring = false
-	attacking = false
 
-	sprite.play("Idle")
+	await get_tree().create_timer(0.05).timeout
+
+	attacking = false
 
 func update_animation(dir):
 
@@ -232,16 +256,14 @@ func update_animation(dir):
 		play_anim("Idle")
 
 func play_anim(name: String):
-	if sprite.animation == name:
-		return
 	sprite.play(name)
 
 func _on_light_attack_body_entered(body):
 	if body != self and body.has_method("take_hit"):
-		body.take_hit(global_position)
+		body.take_hit(global_position, 20, 250, 5)
 		hit_freeze(LIGHT_HIT_FREEZE)
 
 func _on_heavy_attack_body_entered(body):
 	if body != self and body.has_method("take_hit"):
-		body.take_hit(global_position, 400, -250, 15)
+		body.take_hit(global_position, 60, 400, 15)
 		hit_freeze(HEAVY_HIT_FREEZE)
