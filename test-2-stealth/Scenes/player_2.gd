@@ -113,8 +113,16 @@ func _physics_process(delta):
 			can_dash = true
 
 	# --- ATTACKS ---
+# --- LIGHT / DOWN ATTACK ---
 	if Input.is_action_just_pressed("P2_Light_Attack") and not attacking:
-		attack(light_hitbox, 0.4, "Light_Attack")
+
+	# AIR DOWN ATTACK (SPIKE)
+		if not is_on_floor() and Input.is_action_pressed("P2_Down"):
+			attack(light_hitbox, 0.3, "P2_Down_Attack")
+
+	# NORMAL ATTACK
+	else:
+		attack(light_hitbox, 0.3, "P2_Light_Attack")
 
 	if Input.is_action_just_pressed("P2_Heavy_Attack") and not attacking:
 		current_attack = "Heavy_Attack"
@@ -156,11 +164,15 @@ func respawn():
 func die():
 	print("PLAYER OUT")
 
-	# Disable movement
 	set_physics_process(false)
-
-	# Optional: hide player
 	sprite.visible = false
+
+	var death_screen = get_tree().get_root().find_child("DeathScreen", true, false)
+
+	if name == "Player":
+		death_screen.show_winner("Player 2")
+	else:
+		death_screen.show_winner("Player 1")
 
 func _ready():
 	light_shape_base_x = light_shape.position.x

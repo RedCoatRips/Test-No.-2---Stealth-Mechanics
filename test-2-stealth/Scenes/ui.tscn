@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://dpt36jdnp3py5"]
 
 [ext_resource type="Script" uid="uid://dowqs12ug4rg0" path="res://Scenes/ui.gd" id="1_jxero"]
+[ext_resource type="Script" uid="uid://3cvkbw1d2oyn" path="res://Scenes/death_screen.gd" id="2_qdvrb"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_nf4gj"]
+font_size = 60
 
 [node name="UI" type="CanvasLayer" unique_id=1458638597]
 script = ExtResource("1_jxero")
@@ -31,3 +35,39 @@ offset_left = 1093.0
 offset_top = 685.0
 offset_right = 1281.0
 offset_bottom = 718.0
+
+[node name="DeathScreen" type="Control" parent="." unique_id=1121735029]
+process_mode = 3
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_qdvrb")
+
+[node name="ColorRect" type="ColorRect" parent="DeathScreen" unique_id=1650913087]
+layout_mode = 0
+offset_right = 1289.0
+offset_bottom = 727.0
+color = Color(0, 0, 0, 1)
+
+[node name="WinnerText" type="Label" parent="DeathScreen" unique_id=280617720]
+layout_mode = 0
+offset_left = 452.0
+offset_top = 177.0
+offset_right = 806.0
+offset_bottom = 260.0
+text = "Player Wins!"
+label_settings = SubResource("LabelSettings_nf4gj")
+
+[node name="Restart" type="Button" parent="DeathScreen" unique_id=514484101]
+process_mode = 3
+layout_mode = 0
+offset_left = 508.0
+offset_top = 391.0
+offset_right = 761.0
+offset_bottom = 459.0
+text = "Restart"
+icon_alignment = 1
+
+[connection signal="pressed" from="DeathScreen/Restart" to="DeathScreen" method="_on_restart_pressed"]

@@ -254,7 +254,7 @@ size = Vector2(110.5, 66.25)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3smsa"]
 size = Vector2(106, 54)
 
-[node name="Player" type="CharacterBody2D" unique_id=2010273929]
+[node name="player" type="CharacterBody2D" unique_id=2010273929]
 texture_filter = 1
 script = ExtResource("1_v0iea")
 
