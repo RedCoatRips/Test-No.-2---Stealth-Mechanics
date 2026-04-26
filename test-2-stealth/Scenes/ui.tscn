@@ -67,6 +67,7 @@ offset_left = 508.0
 offset_top = 391.0
 offset_right = 761.0
 offset_bottom = 459.0
+focus_mode = 0
 text = "Restart"
 icon_alignment = 1
 

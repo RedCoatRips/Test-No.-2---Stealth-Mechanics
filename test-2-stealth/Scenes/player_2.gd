@@ -268,6 +268,10 @@ func update_animation(dir):
 		play_anim("Idle")
 
 func play_anim(name: String):
+	if current_anim == name:
+		return
+
+	current_anim = name
 	sprite.play(name)
 
 func _on_light_attack_body_entered(body):
