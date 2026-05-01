@@ -273,7 +273,6 @@ collision_layer = 2
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LightAttack" unique_id=660164945]
-position = Vector2(39.25, -14.875)
 shape = SubResource("RectangleShape2D_x3wgy")
 
 [node name="HeavyAttack" type="Area2D" parent="." unique_id=2106499331]
@@ -281,7 +280,6 @@ collision_layer = 2
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HeavyAttack" unique_id=515278683]
-position = Vector2(37, -10)
 shape = SubResource("RectangleShape2D_3smsa")
 
 [connection signal="body_entered" from="LightAttack" to="." method="_on_light_attack_body_entered"]
