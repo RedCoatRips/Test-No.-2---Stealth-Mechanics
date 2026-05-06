@@ -4,7 +4,7 @@ extends CanvasLayer
 @onready var p2_label = $P2_Damage
 @onready var p1_stocks = $P1_Stocks
 @onready var p2_stocks = $P2_Stocks
-
+@onready var stat_menu = $StatMenu
 var player1 = null
 var player2 = null
 
@@ -12,9 +12,23 @@ func _ready():
 	# Adjust paths if your nodes are named differently
 	player1 = get_node("../Player")
 	player2 = get_node("../Player_2")
+	stat_menu.visible = false
 
 func _process(_delta):
 
+	# =========================
+	# TOGGLE MENU
+	# =========================
+	if Input.is_action_just_pressed("Toggle_Stats_Menu"):
+
+		stat_menu.visible = !stat_menu.visible
+
+		player1.stat_menu_open = stat_menu.visible
+		player2.stat_menu_open = stat_menu.visible
+
+	# =========================
+	# DAMAGE UI
+	# =========================
 	if player1 != null:
 		update_label(p1_label, player1.damage)
 

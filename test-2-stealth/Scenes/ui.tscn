@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dowqs12ug4rg0" path="res://Scenes/ui.gd" id="1_jxero"]
 [ext_resource type="Script" uid="uid://3cvkbw1d2oyn" path="res://Scenes/death_screen.gd" id="2_qdvrb"]
+[ext_resource type="Script" uid="uid://x2juvxppluwg" path="res://Scenes/stat_menu.gd" id="3_nf4gj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_nf4gj"]
 font_size = 60
@@ -70,5 +71,120 @@ offset_bottom = 459.0
 focus_mode = 0
 text = "Restart"
 icon_alignment = 1
+
+[node name="StatMenu" type="Control" parent="." unique_id=1831897253]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_nf4gj")
+
+[node name="Panel" type="Panel" parent="StatMenu" unique_id=44644846]
+layout_mode = 0
+offset_left = 144.0
+offset_top = 59.0
+offset_right = 971.0
+offset_bottom = 547.0
+
+[node name="Title" type="Label" parent="StatMenu/Panel" unique_id=1082612886]
+layout_mode = 0
+offset_left = 84.0
+offset_top = 12.0
+offset_right = 730.0
+offset_bottom = 107.0
+theme_override_font_sizes/font_size = 60
+text = "Stat Points"
+horizontal_alignment = 1
+
+[node name="P1Controls" type="Label" parent="StatMenu/Panel" unique_id=446878171]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 433.0
+offset_right = 293.0
+offset_bottom = 489.0
+text = "Player_1                                    
+W=Strength  A=Agility  D=Jump Power	"
+
+[node name="P1Strength" type="Label" parent="StatMenu/Panel" unique_id=1788281060]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 387.0
+offset_right = 137.0
+offset_bottom = 410.0
+theme_override_font_sizes/font_size = 30
+text = "P1 Strength ="
+
+[node name="P1Points" type="Label" parent="StatMenu/Panel" unique_id=357473399]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 42.0
+offset_right = 194.0
+offset_bottom = 77.0
+theme_override_font_sizes/font_size = 25
+text = "P1 Points left = "
+
+[node name="P1Agility" type="Label" parent="StatMenu/Panel" unique_id=846451458]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 115.0
+offset_right = 200.0
+offset_bottom = 157.0
+theme_override_font_sizes/font_size = 30
+text = "P1 Agility = "
+
+[node name="P1Jump" type="Label" parent="StatMenu/Panel" unique_id=993659121]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 254.0
+offset_right = 170.0
+offset_bottom = 278.0
+theme_override_font_sizes/font_size = 30
+text = "P1 Jump Power ="
+
+[node name="P2Controls" type="Label" parent="StatMenu/Panel" unique_id=1535187724]
+layout_mode = 0
+offset_left = 403.0
+offset_top = 431.0
+offset_right = 827.0
+offset_bottom = 488.0
+text = "Player_2
+I=Strength  J=Agility  L=Jump Power"
+
+[node name="P2Points" type="Label" parent="StatMenu/Panel" unique_id=705400649]
+layout_mode = 0
+offset_left = 579.0
+offset_top = 42.0
+offset_right = 766.0
+offset_bottom = 77.0
+theme_override_font_sizes/font_size = 25
+text = "P2 Points left = "
+
+[node name="P2Agility" type="Label" parent="StatMenu/Panel" unique_id=226547140]
+layout_mode = 0
+offset_left = 456.0
+offset_top = 115.0
+offset_right = 614.0
+offset_bottom = 157.0
+theme_override_font_sizes/font_size = 30
+text = "P2 Agility ="
+
+[node name="P2Jump" type="Label" parent="StatMenu/Panel" unique_id=397548982]
+layout_mode = 0
+offset_left = 440.0
+offset_top = 254.0
+offset_right = 683.0
+offset_bottom = 296.0
+theme_override_font_sizes/font_size = 30
+text = "P2 Jump Power ="
+
+[node name="P2Strength" type="Label" parent="StatMenu/Panel" unique_id=110211535]
+layout_mode = 0
+offset_left = 481.0
+offset_top = 388.0
+offset_right = 675.0
+offset_bottom = 430.0
+theme_override_font_sizes/font_size = 30
+text = "P2 Strength ="
 
 [connection signal="pressed" from="DeathScreen/Restart" to="DeathScreen" method="_on_restart_pressed"]
