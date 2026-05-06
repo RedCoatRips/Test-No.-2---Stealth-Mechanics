@@ -65,7 +65,8 @@ var already_hit = []
 var current_anim = ""
 
 var stat_input_cooldown = 0.0
-const STAT_INPUT_DELAY = 0.1
+const STAT_INPUT_DELAY = 0.5
+
 # =========================
 # HITBOX OFFSETS
 # =========================
@@ -111,13 +112,6 @@ func _physics_process(delta):
 
 	handle_stat_debug_input()
 
-	if stat_menu_open:
-		handle_stat_debug_input()
-		return
-
-	if stat_input_cooldown > 0:
-		stat_input_cooldown -= delta
-
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
 
@@ -131,7 +125,20 @@ func _physics_process(delta):
 	else:
 		jumps_left = MAX_JUMPS
 
-	var dir = Input.get_axis("P2_Left", "P2_Right")
+	if stat_menu_open:
+
+		handle_stat_debug_input()
+
+		if stat_input_cooldown > 0:
+			stat_input_cooldown -= delta
+
+		# stop movement
+		velocity.x = 0
+
+	var dir = 0
+
+	if not stat_menu_open:
+		dir = Input.get_axis("P2_Left", "P2_Right")
 
 	if dir != 0:
 		facing = dir

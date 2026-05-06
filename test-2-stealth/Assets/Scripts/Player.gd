@@ -65,7 +65,9 @@ var already_hit = []
 var current_anim = ""
 
 var stat_input_cooldown = 0.0
-const STAT_INPUT_DELAY = 0.1
+const STAT_INPUT_DELAY = 0.5
+
+
 # =========================
 # HITBOX OFFSETS
 # =========================
@@ -111,12 +113,11 @@ func _physics_process(delta):
 
 	handle_stat_debug_input()
 
-	if stat_menu_open:
-		handle_stat_debug_input()
-		return
-
 	if stat_input_cooldown > 0:
 		stat_input_cooldown -= delta
+
+		# stop movement
+		velocity.x = 0
 
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
@@ -131,7 +132,21 @@ func _physics_process(delta):
 	else:
 		jumps_left = MAX_JUMPS
 
-	var dir = Input.get_axis("Left", "Right")
+	if stat_menu_open:
+
+		handle_stat_debug_input()
+
+		if stat_input_cooldown > 0:
+			stat_input_cooldown -= delta
+
+		# stop movement
+		velocity.x = 0
+
+
+	var dir = 0
+
+	if not stat_menu_open:
+		dir = Input.get_axis("Left", "Right")
 
 	if dir != 0:
 		facing = dir
@@ -140,7 +155,7 @@ func _physics_process(delta):
 	light_hitbox.position.x = facing * LIGHT_OFFSET
 	heavy_hitbox.position.x = facing * HEAVY_OFFSET
 
-	if Input.is_action_just_pressed("Jump"):
+	if not stat_menu_open and Input.is_action_just_pressed("Jump"):
 		var jump_force = BASE_JUMP_FORCE * jump_stat
 
 		if is_on_floor():
@@ -150,7 +165,7 @@ func _physics_process(delta):
 			velocity.y = jump_force
 			jumps_left -= 1
 
-	if Input.is_action_just_pressed("Dash") and can_dash:
+	if not stat_menu_open and Input.is_action_just_pressed("Dash") and can_dash:
 		start_dash()
 
 	if is_dashing:
@@ -175,11 +190,11 @@ func _physics_process(delta):
 				200 * delta
 			)
 
-	if Input.is_action_just_pressed("Light_Attack") and not attacking and attack_cooldown <= 0:
+	if not stat_menu_open and Input.is_action_just_pressed("Light_Attack") and not attacking and attack_cooldown <= 0:
 		attack(light_hitbox, 0.3, "Light_Attack")
 		attack_cooldown = LIGHT_COOLDOWN
 
-	if Input.is_action_just_pressed("Heavy_Attack") and not attacking:
+	if not stat_menu_open and Input.is_action_just_pressed("Heavy_Attack") and not attacking:
 		attack(heavy_hitbox, 0.5, "Heavy_Attack")
 
 	update_animation(dir)
