@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 # =========================
-# STATS
+# STATS (EDIT THESE)
 # =========================
 var BASE_STRENGTH = 1.0
 var BASE_AGILITY = 1.0
@@ -26,9 +26,6 @@ const DASH_COOLDOWN = 0.5
 const MAX_JUMPS = 2
 const LIGHT_COOLDOWN = 0.3
 
-# Smash-style push strength
-const PUSH_FORCE = 120
-
 # =========================
 # STATE
 # =========================
@@ -43,6 +40,7 @@ var dash_direction = 1
 
 var attacking = false
 var attack_cooldown = 0.0
+
 var current_anim = ""
 
 # =========================
@@ -81,7 +79,7 @@ func _physics_process(delta):
 		facing = dir
 		sprite.flip_h = facing < 0
 
-	# hitbox positioning (CORRECT WAY)
+	# hitbox position fix
 	light_hitbox.position.x = facing * LIGHT_OFFSET
 	heavy_hitbox.position.x = facing * HEAVY_OFFSET
 
@@ -125,53 +123,31 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("Heavy_Attack") and not attacking:
 		attack(heavy_hitbox, 0.5, "Heavy_Attack")
 
-	# MOVE FIRST
-	move_and_slide()
-
-	# =========================
-	# SMASH-STYLE PLAYER COLLISION
-	# =========================
-
-	for i in range(get_slide_collision_count()):
-		var col = get_slide_collision(i)
-		print("HIT:", col.get_collider())
-		var other = col.get_collider()
-
-		if other is CharacterBody2D:
-			var push_dir = sign(global_position.x - other.global_position.x)
-
-			# smooth push (NO JITTER)
-			other.velocity.x = lerp(other.velocity.x, -push_dir * PUSH_FORCE, 0.2)
-
-	# animation
+	# animation (VERY IMPORTANT)
 	update_animation(dir)
 
+	move_and_slide()
+
 # =========================
-# ATTACK
+# ATTACK SYSTEM
 # =========================
 func attack(hitbox, duration, anim):
 
 	attacking = true
 	sprite.play(anim)
 
-	# startup
 	await get_tree().create_timer(0.1).timeout
 	hitbox.monitoring = true
 
-	# active frames
 	await get_tree().create_timer(0.1).timeout
 	hitbox.monitoring = false
 
-	# recovery
 	await get_tree().create_timer(duration - 0.2).timeout
 
 	attacking = false
 
-	# FORCE animation recovery
-	update_animation(Input.get_axis("Left", "Right"))
-
 # =========================
-# ANIMATION
+# ANIMATION SYSTEM (FIXED)
 # =========================
 func update_animation(dir):
 
@@ -180,9 +156,13 @@ func update_animation(dir):
 
 	if is_dashing:
 		play_anim("Dash")
-	elif not is_on_floor():
+		return
+
+	if not is_on_floor():
 		play_anim("Jump")
-	elif abs(velocity.x) > 10:
+		return
+
+	if abs(velocity.x) > 10:
 		play_anim("Run")
 	else:
 		play_anim("Idle")
@@ -208,7 +188,7 @@ func start_dash():
 # =========================
 func take_hit(pos, angle := 45, force := 400, dmg := 10):
 
-	damage += dmg
+	damage += dmg  # 🔥 ADD THIS BACK
 
 	var dir = sign(global_position.x - pos.x)
 	var rad = deg_to_rad(angle)
