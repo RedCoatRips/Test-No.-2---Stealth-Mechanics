@@ -73,7 +73,6 @@ text = "Restart"
 icon_alignment = 1
 
 [node name="StatMenu" type="Control" parent="." unique_id=1831897253]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -108,10 +107,10 @@ W=Strength  A=Agility  D=Jump Power	"
 
 [node name="P1Strength" type="Label" parent="StatMenu/Panel" unique_id=1788281060]
 layout_mode = 0
-offset_left = 33.0
-offset_top = 387.0
-offset_right = 137.0
-offset_bottom = 410.0
+offset_left = 36.0
+offset_top = 217.0
+offset_right = 230.0
+offset_bottom = 259.0
 theme_override_font_sizes/font_size = 30
 text = "P1 Strength ="
 
@@ -135,10 +134,10 @@ text = "P1 Agility = "
 
 [node name="P1Jump" type="Label" parent="StatMenu/Panel" unique_id=993659121]
 layout_mode = 0
-offset_left = 32.0
-offset_top = 254.0
-offset_right = 170.0
-offset_bottom = 278.0
+offset_left = 31.0
+offset_top = 168.0
+offset_right = 274.0
+offset_bottom = 210.0
 theme_override_font_sizes/font_size = 30
 text = "P1 Jump Power ="
 
@@ -171,20 +170,38 @@ text = "P2 Agility ="
 
 [node name="P2Jump" type="Label" parent="StatMenu/Panel" unique_id=397548982]
 layout_mode = 0
-offset_left = 440.0
-offset_top = 254.0
-offset_right = 683.0
-offset_bottom = 296.0
+offset_left = 457.0
+offset_top = 162.0
+offset_right = 700.0
+offset_bottom = 204.0
 theme_override_font_sizes/font_size = 30
 text = "P2 Jump Power ="
 
 [node name="P2Strength" type="Label" parent="StatMenu/Panel" unique_id=110211535]
 layout_mode = 0
-offset_left = 481.0
-offset_top = 388.0
-offset_right = 675.0
-offset_bottom = 430.0
+offset_left = 456.0
+offset_top = 209.0
+offset_right = 650.0
+offset_bottom = 251.0
 theme_override_font_sizes/font_size = 30
 text = "P2 Strength ="
+
+[node name="P1LifeSteal" type="Label" parent="StatMenu/Panel" unique_id=867969534]
+layout_mode = 0
+offset_left = 41.0
+offset_top = 271.0
+offset_right = 234.0
+offset_bottom = 313.0
+theme_override_font_sizes/font_size = 30
+text = "P1 Life Steal ="
+
+[node name="P2LifeSteal" type="Label" parent="StatMenu/Panel" unique_id=1574577434]
+layout_mode = 0
+offset_left = 458.0
+offset_top = 261.0
+offset_right = 659.0
+offset_bottom = 303.0
+theme_override_font_sizes/font_size = 30
+text = "P2 Life Steal ="
 
 [connection signal="pressed" from="DeathScreen/Restart" to="DeathScreen" method="_on_restart_pressed"]

@@ -1,77 +1,148 @@
 extends CharacterBody2D
 
 # =========================
-# DEBUG
+# STOCKS
 # =========================
-const DEBUG_HITBOXES = true
-const DEBUG_STATS = true
+var stocks = 3
+var respawn_position = Vector2.ZERO
 
 # =========================
-# STAT POINTS
+# BLAST ZONES
 # =========================
-var available_stat_points = 4
+var BLAST_TOP = -2000
+var BLAST_BOTTOM = 2000
+var BLAST_LEFT = -4000
+var BLAST_RIGHT = 4000
 
-var strength_points = 1
-var agility_points = 0
-var jump_points = 0
-var stat_menu_open = false
-const STRENGTH_PER_POINT = 0.25
-const AGILITY_PER_POINT = 0.25
-const JUMP_PER_POINT = 0.25
+# =========================
+# MOVEMENT
+# =========================
+var RUN_SPEED = 260.0
+var AIR_ACCELERATION = 900.0
+var ACCELERATION = 1800.0
+var FRICTION = 2000.0
+
+# =========================
+# JUMP
+# =========================
+var JUMP_FORCE = -460.0
+var DOUBLE_JUMP_FORCE = -430.0
+var BASE_JUMPS = 2
+
+# =========================
+# WALL SYSTEM
+# =========================
+var WALL_SLIDE_SPEED = 120.0
+var WALL_JUMP_X = 500.0
+var WALL_JUMP_Y = -500.0
+var WALL_HOLD_GRAVITY = 100.0
+
+var wall_sliding = false
+var wall_direction = 0
+
+# =========================
+# GRAVITY
+# =========================
+var GRAVITY = 1000
+var FAST_FALL_GRAVITY = 2600.0
+var MAX_FALL_SPEED = 1500.0
+
+# =========================
+# DASH
+# =========================
+var DASH_SPEED = 700.0
+var DASH_TIME = 0.14
+var DASH_COOLDOWN = 0.45
+
+# =========================
+# AIR DODGE
+# =========================
+var AIR_DODGE_SPEED = 800.0
+var AIR_DODGE_TIME = 0.20
+var AIR_DODGE_INVINCIBILITY = 2.0
+
+# =========================
+# ATTACKS
+# =========================
+var LIGHT_DAMAGE = 8
+var HEAVY_DAMAGE = 15
+
+var LIGHT_FORCE = 200
+var HEAVY_FORCE = 400
+
+var LIGHT_ANGLE = 35
+var HEAVY_ANGLE = 45
+
+var LIGHT_COOLDOWN = 0.20
+var HEAVY_COOLDOWN = 0.45
+
+# =========================
+# COMBOS
+# =========================
+var combo_step = 0
+var combo_timer = 0.0
+var COMBO_RESET_TIME = 0.8
 
 # =========================
 # STATS
 # =========================
-var BASE_STRENGTH = 1.0
-var BASE_AGILITY = 1.0
-var BASE_JUMP = 1.0
-var damage = 0
+var available_stat_points = 4
 
-var strength = BASE_STRENGTH
-var agility = BASE_AGILITY
-var jump_stat = BASE_JUMP
+var strength_points = 1
+var agility_points = 1
+var jump_points = 1
+var lifesteal_points = 1
 
 # =========================
-# CONSTANTS
+# STAT SCALING
 # =========================
-const BASE_SPEED = 200
-const BASE_JUMP_FORCE = -400
-const GRAVITY = 800
+var STRENGTH_PER_POINT = 0.25
+var AGILITY_PER_POINT = 0.15
+var JUMP_PER_POINT = 0.20
+var LIFE_STEAL_PER_POINT = 0.1
 
-const DASH_BASE = 600
-const DASH_TIME = 0.15
-const DASH_COOLDOWN = 0.5
+# =========================
+# FINAL STATS
+# =========================
+var strength = 1.0
+var agility = 1.0
+var jump_stat = 1.0
 
-const MAX_JUMPS = 2
-const LIGHT_COOLDOWN = 0.3
+# =========================
+# DAMAGE
+# =========================
+var damage = 0.0
 
 # =========================
 # STATE
 # =========================
-var jumps_left = MAX_JUMPS
+var jumps_left = 2
 var facing = 1
-
-var is_dashing = false
-var can_dash = true
-var dash_time_left = 0.0
-var dash_cooldown_left = 0.0
-var dash_direction = 1
 
 var attacking = false
 var attack_cooldown = 0.0
-var current_attack = ""
-var already_hit = []
+
+var is_dashing = false
+var dash_timer = 0.0
+
+var can_dash = true
+var dash_cooldown = 0.0
+
+var is_air_dodging = false
+
+var invincible = false
+var invincible_timer = 0.0
+
+var stat_menu_open = false
 
 var current_anim = ""
-
-var stat_input_cooldown = 0.0
-const STAT_INPUT_DELAY = 0.5
+var current_attack = ""
 
 # =========================
-# HITBOX OFFSETS
+# HITBOXS
 # =========================
 const LIGHT_OFFSET = 40
-const HEAVY_OFFSET = 50
+const HEAVY_OFFSET = 60
 
 # =========================
 # NODES
@@ -80,18 +151,12 @@ const HEAVY_OFFSET = 50
 @onready var light_hitbox = $LightAttack
 @onready var heavy_hitbox = $HeavyAttack
 
-#==========================
-#StatMenu
-#==========================
-@onready var stat_menu = $"../UI/StatMenu"
-
 # =========================
 # READY
 # =========================
 func _ready():
-	add_to_group("players")
 
-	apply_stats()
+	respawn_position = global_position
 
 	light_hitbox.monitoring = false
 	heavy_hitbox.monitoring = false
@@ -99,95 +164,179 @@ func _ready():
 	light_hitbox.body_entered.connect(_on_light_hitbox_body_entered)
 	heavy_hitbox.body_entered.connect(_on_heavy_hitbox_body_entered)
 
-	if DEBUG_HITBOXES:
-		print(name, " ready")
-		print("Light hitbox: ", light_hitbox)
-		print("Heavy hitbox: ", heavy_hitbox)
-		print("Players group count: ", get_tree().get_nodes_in_group("players").size())
+	apply_stats()
 
 # =========================
 # MAIN LOOP
 # =========================
 func _physics_process(delta):
 
-	handle_stat_debug_input()
+	check_blast_zone()
 
+	# cooldowns
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
 
-	if not can_dash:
-		dash_cooldown_left -= delta
-		if dash_cooldown_left <= 0:
-			can_dash = true
-
-	if not is_on_floor():
-		velocity.y += GRAVITY * delta
+	if combo_timer > 0:
+		combo_timer -= delta
 	else:
-		jumps_left = MAX_JUMPS
+		combo_step = 0
 
-	if stat_menu_open:
+	if dash_cooldown > 0:
+		dash_cooldown -= delta
+	else:
+		can_dash = true
 
-		handle_stat_debug_input()
+	if invincible_timer > 0:
+		invincible_timer -= delta
+	else:
+		invincible = false
 
-		if stat_input_cooldown > 0:
-			stat_input_cooldown -= delta
-
-		# stop movement
-		velocity.x = 0
-
+	# =========================
+	# INPUT
+	# =========================
 	var dir = 0
 
 	if not stat_menu_open:
 		dir = Input.get_axis("P2_Left", "P2_Right")
 
+	# =========================
+	# WALL DETECTION
+	# =========================
+	wall_sliding = false
+
+	if is_on_wall() and not is_on_floor() and velocity.y > 0:
+
+		wall_sliding = true
+
+		if get_wall_normal().x > 0:
+			wall_direction = 1
+		else:
+			wall_direction = -1
+
+	# =========================
+	# GRAVITY
+	# =========================
+	if not is_on_floor():
+
+		if wall_sliding:
+
+			velocity.y += WALL_HOLD_GRAVITY * delta
+			velocity.y = min(velocity.y, WALL_SLIDE_SPEED)
+
+		elif Input.is_action_pressed("P2_Down"):
+
+			velocity.y += FAST_FALL_GRAVITY * delta
+
+		else:
+
+			velocity.y += GRAVITY * delta
+
+	else:
+
+		jumps_left = BASE_JUMPS + max(0, agility_points - 2)
+
+	velocity.y = min(velocity.y, MAX_FALL_SPEED)
+
+	# =========================
+	# FACING
+	# =========================
 	if dir != 0:
-		facing = dir
+		facing = sign(dir)
 		sprite.flip_h = facing < 0
 
-	light_hitbox.position.x = facing * LIGHT_OFFSET
-	heavy_hitbox.position.x = facing * HEAVY_OFFSET
+	# =========================
+	# HITBOX POSITIONS
+	# =========================
+	light_hitbox.position.x = LIGHT_OFFSET * facing
+	heavy_hitbox.position.x = HEAVY_OFFSET * facing
 
-	if Input.is_action_just_pressed("P2_Jump"):
-		var jump_force = BASE_JUMP_FORCE * jump_stat
+	# =========================
+	# JUMP
+	# =========================
+	if not stat_menu_open and Input.is_action_just_pressed("P2_Jump"):
 
-		if is_on_floor():
-			velocity.y = jump_force
-			jumps_left = MAX_JUMPS - 1
-		elif jumps_left > 0:
-			velocity.y = jump_force
+		# WALL JUMP
+		if wall_sliding:
+
+			velocity.x = WALL_JUMP_X * wall_direction
+			velocity.y = WALL_JUMP_Y
+
+			wall_sliding = false
+
+		elif is_on_floor():
+
+			velocity.y = JUMP_FORCE * jump_stat
 			jumps_left -= 1
 
-	if Input.is_action_just_pressed("P2_Dash") and can_dash:
-		start_dash()
+		elif jumps_left > 0:
 
+			velocity.y = DOUBLE_JUMP_FORCE * jump_stat
+			jumps_left -= 1
+
+	# =========================
+	# DASH / AIR DODGE
+	# =========================
+	if not stat_menu_open and Input.is_action_just_pressed("P2_Dash"):
+
+		if not is_on_floor():
+			start_air_dodge(dir)
+
+		elif can_dash:
+			start_dash()
+
+	# =========================
+	# DASH MOVEMENT
+	# =========================
 	if is_dashing:
-		velocity.x = dash_direction * (DASH_BASE * agility)
-		dash_time_left -= delta
 
-		if dash_time_left <= 0:
+		dash_timer -= delta
+
+		velocity.x = DASH_SPEED * facing
+
+		if dash_timer <= 0:
 			is_dashing = false
 
-	var speed = BASE_SPEED * agility
+	# =========================
+	# NORMAL MOVEMENT
+	# =========================
+	if not is_dashing and not is_air_dodging and not wall_sliding:
 
-	if not is_dashing:
+		var target_speed = dir * RUN_SPEED * agility
+
 		if is_on_floor():
-			if dir != 0:
-				velocity.x = dir * speed
-			else:
-				velocity.x = move_toward(velocity.x, 0, 1500 * delta)
-		else:
+
 			velocity.x = move_toward(
 				velocity.x,
-				velocity.x + dir * speed,
-				200 * delta
+				target_speed,
+				ACCELERATION * delta
 			)
 
-	if Input.is_action_just_pressed("P2_Light_Attack") and not attacking and attack_cooldown <= 0:
-		attack(light_hitbox, 0.3, "Light_Attack")
-		attack_cooldown = LIGHT_COOLDOWN
+			if dir == 0:
+				velocity.x = move_toward(
+					velocity.x,
+					0,
+					FRICTION * delta
+				)
 
-	if Input.is_action_just_pressed("P2_Heavy_Attack") and not attacking:
-		attack(heavy_hitbox, 0.5, "Heavy_Attack")
+		else:
+
+			velocity.x = move_toward(
+				velocity.x,
+				target_speed,
+				AIR_ACCELERATION * delta
+			)
+
+	# =========================
+	# ATTACKS
+	# =========================
+	if not stat_menu_open:
+
+		if Input.is_action_just_pressed("P2_Light_Attack"):
+			do_light_attack()
+
+		if Input.is_action_just_pressed("P2_Heavy_Attack"):
+			do_heavy_attack()
 
 	update_animation(dir)
 
@@ -196,148 +345,195 @@ func _physics_process(delta):
 # =========================
 # STAT SYSTEM
 # =========================
-func add_stat_points(amount):
-	available_stat_points += amount
-
-	if DEBUG_STATS:
-		print(name, " gained ", amount, " stat points. Available: ", available_stat_points)
-
 func spend_stat_point(stat_name):
 
 	if available_stat_points <= 0:
-		if DEBUG_STATS:
-			print("No stat points available")
 		return
 
 	match stat_name:
+
 		"strength":
 			strength_points += 1
+
 		"agility":
 			agility_points += 1
+
 		"jump":
 			jump_points += 1
-		_:
-			if DEBUG_STATS:
-				print("Unknown stat: ", stat_name)
-			return
+
+		"lifesteal":
+			lifesteal_points += 1
 
 	available_stat_points -= 1
+
 	apply_stats()
 
 func apply_stats():
-	strength = BASE_STRENGTH + (strength_points * STRENGTH_PER_POINT)
-	agility = BASE_AGILITY + (agility_points * AGILITY_PER_POINT)
-	jump_stat = BASE_JUMP + (jump_points * JUMP_PER_POINT)
 
-	if DEBUG_STATS:
-		print_stats()
+	strength = 1.0 + (strength_points * STRENGTH_PER_POINT)
 
-func print_stats():
-	print("====== ", name, " STATS ======")
-	print("Available Points: ", available_stat_points)
-	print("Strength Points: ", strength_points, " | Strength: ", strength)
-	print("Agility Points: ", agility_points, " | Agility: ", agility)
-	print("Jump Points: ", jump_points, " | Jump Power: ", jump_stat)
-	print("==========================")
+	agility = 1.0 + (agility_points * AGILITY_PER_POINT)
 
-func handle_stat_debug_input():
-
-	if not stat_menu_open:
-		return
-
-	if stat_input_cooldown > 0:
-		return
-
-	if Input.is_key_pressed(KEY_I):
-		spend_stat_point("strength")
-		stat_input_cooldown = STAT_INPUT_DELAY
-
-	if Input.is_key_pressed(KEY_J):
-		spend_stat_point("agility")
-		stat_input_cooldown = STAT_INPUT_DELAY
-
-	if Input.is_key_pressed(KEY_L):
-		spend_stat_point("jump")
-		stat_input_cooldown = STAT_INPUT_DELAY
+	jump_stat = 1.0 + (jump_points * JUMP_PER_POINT)
 
 # =========================
-# ATTACK SYSTEM
+# ATTACKS
 # =========================
-func attack(hitbox, duration, anim):
+func do_light_attack():
+
+	if attacking or attack_cooldown > 0:
+		return
 
 	attacking = true
-	current_attack = anim
-	already_hit.clear()
 
-	play_anim(anim)
+	combo_step += 1
 
-	if DEBUG_HITBOXES:
-		print(name, " started attack: ", anim)
+	if combo_step > 3:
+		combo_step = 1
 
-	await get_tree().create_timer(0.1).timeout
+	combo_timer = COMBO_RESET_TIME
 
-	hitbox.monitoring = true
+	play_anim("Light_Attack")
 
-	if DEBUG_HITBOXES:
-		print(name, " hitbox ON: ", hitbox.name)
+	light_hitbox.monitoring = true
 
-	await get_tree().physics_frame
+	await get_tree().create_timer(0.12).timeout
 
-	for body in hitbox.get_overlapping_bodies():
-		register_hit(body)
+	light_hitbox.monitoring = false
 
-	await get_tree().create_timer(0.1).timeout
-
-	hitbox.monitoring = false
-
-	if DEBUG_HITBOXES:
-		print(name, " hitbox OFF: ", hitbox.name)
-
-	await get_tree().create_timer(max(duration - 0.2, 0.0)).timeout
+	await get_tree().create_timer(0.15).timeout
 
 	attacking = false
-	current_attack = ""
-	already_hit.clear()
 
-	update_animation(Input.get_axis("P2_Left", "P2_Right"))
+	attack_cooldown = LIGHT_COOLDOWN
 
-func register_hit(body):
+func do_heavy_attack():
+
+	if attacking:
+		return
+
+	attacking = true
+
+	play_anim("Heavy_Attack")
+
+	heavy_hitbox.monitoring = true
+
+	await get_tree().create_timer(0.16).timeout
+
+	heavy_hitbox.monitoring = false
+
+	await get_tree().create_timer(0.25).timeout
+
+	attacking = false
+
+	attack_cooldown = HEAVY_COOLDOWN
+
+# =========================
+# HIT
+# =========================
+func register_hit(body, damage_amount, force, angle):
 
 	if body == self:
 		return
 
-	if already_hit.has(body):
-		return
-
 	if not body.has_method("take_hit"):
-		if DEBUG_HITBOXES:
-			print("Hit something without take_hit(): ", body.name)
 		return
 
-	already_hit.append(body)
+	body.take_hit(global_position, angle, force * strength, damage_amount)
 
-	if current_attack == "Heavy_Attack":
-		body.take_hit(global_position, 45, 600 * strength, 15)
-	else:
-		body.take_hit(global_position, 35, 400 * strength, 8)
+	var steal = damage_amount * (lifesteal_points * LIFE_STEAL_PER_POINT)
 
-	if DEBUG_HITBOXES:
-		print(name, " HIT ", body.name, " with ", current_attack)
+	damage = max(0, damage - steal)
 
-func _on_light_hitbox_body_entered(body):
-	if current_attack == "Light_Attack":
-		register_hit(body)
+func take_hit(pos, angle := 45, force := 400, dmg := 10):
 
-func _on_heavy_hitbox_body_entered(body):
-	if current_attack == "Heavy_Attack":
-		register_hit(body)
+	if invincible:
+		return
+
+	damage += dmg
+
+	var kb_scale = 1.0 + (damage / 100.0)
+
+	var dir = sign(global_position.x - pos.x)
+
+	var rad = deg_to_rad(angle)
+
+	velocity.x = cos(rad) * force * kb_scale * dir
+	velocity.y = -sin(rad) * force * kb_scale
 
 # =========================
-# ANIMATION SYSTEM
+# HITBOX CALLBACKS
+# =========================
+func _on_light_hitbox_body_entered(body):
+
+	register_hit(body, LIGHT_DAMAGE, LIGHT_FORCE, LIGHT_ANGLE)
+
+func _on_heavy_hitbox_body_entered(body):
+
+	register_hit(body, HEAVY_DAMAGE, HEAVY_FORCE, HEAVY_ANGLE)
+
+# =========================
+# DASH
+# =========================
+func start_dash():
+
+	is_dashing = true
+	can_dash = false
+
+	dash_timer = DASH_TIME
+	dash_cooldown = DASH_COOLDOWN
+
+func start_air_dodge(dir):
+
+	is_air_dodging = true
+
+	invincible = true
+	invincible_timer = AIR_DODGE_INVINCIBILITY
+
+	velocity.x = dir * AIR_DODGE_SPEED
+
+	await get_tree().create_timer(AIR_DODGE_TIME).timeout
+
+	is_air_dodging = false
+
+# =========================
+# STOCKS
+# =========================
+func lose_stock():
+
+	if stocks <= 0:
+		return
+
+	stocks -= 1
+
+	available_stat_points += 2
+
+	damage = 0
+
+	global_position = respawn_position
+
+	velocity = Vector2.ZERO
+
+func check_blast_zone():
+
+	if (
+		global_position.y > BLAST_BOTTOM
+		or global_position.y < BLAST_TOP
+		or global_position.x < BLAST_LEFT
+		or global_position.x > BLAST_RIGHT
+	):
+		lose_stock()
+
+# =========================
+# ANIMATION
 # =========================
 func update_animation(dir):
 
 	if attacking:
+		return
+
+	if wall_sliding:
+		play_anim("Jump")
 		return
 
 	if is_dashing:
@@ -353,42 +549,11 @@ func update_animation(dir):
 	else:
 		play_anim("Idle")
 
-func play_anim(name):
+func play_anim(anim):
 
-	if current_anim == name:
+	if current_anim == anim:
 		return
 
-	current_anim = name
-	sprite.play(name)
+	current_anim = anim
 
-# =========================
-# DASH
-# =========================
-func start_dash():
-
-	is_dashing = true
-	can_dash = false
-
-	dash_time_left = DASH_TIME
-	dash_cooldown_left = DASH_COOLDOWN
-	dash_direction = facing
-
-# =========================
-# HIT
-# =========================
-func take_hit(pos, angle := 45, force := 400, dmg := 10):
-
-	damage += dmg
-
-	var dir = sign(global_position.x - pos.x)
-
-	if dir == 0:
-		dir = 1
-
-	var rad = deg_to_rad(angle)
-
-	velocity.x = cos(rad) * force * dir
-	velocity.y = -sin(rad) * force
-
-	if DEBUG_HITBOXES:
-		print(name, " took hit. Damage is now: ", damage)
+	sprite.play(anim)

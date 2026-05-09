@@ -1,19 +1,35 @@
 extends CanvasLayer
 
+# =========================
+# UI REFERENCES
+# =========================
 @onready var p1_label = $P1_Damage
 @onready var p2_label = $P2_Damage
+
 @onready var p1_stocks = $P1_Stocks
 @onready var p2_stocks = $P2_Stocks
+
 @onready var stat_menu = $StatMenu
+
+# =========================
+# PLAYERS
+# =========================
 var player1 = null
 var player2 = null
 
+# =========================
+# READY
+# =========================
 func _ready():
-	# Adjust paths if your nodes are named differently
+
 	player1 = get_node("../Player")
 	player2 = get_node("../Player_2")
+
 	stat_menu.visible = false
 
+# =========================
+# PROCESS
+# =========================
 func _process(_delta):
 
 	# =========================
@@ -35,43 +51,41 @@ func _process(_delta):
 	if player2 != null:
 		update_label(p2_label, player2.damage)
 
-# --- UPDATE LABEL ---
+	# =========================
+	# STOCKS
+	# =========================
+	if player1 != null:
+		p1_stocks.text = "Stocks: " + str(player1.stocks)
+
+	if player2 != null:
+		p2_stocks.text = "Stocks: " + str(player2.stocks)
+
+# =========================
+# DAMAGE LABEL
+# =========================
 func update_label(label, dmg):
 
 	label.text = str(int(dmg)) + "%"
 
-	# Color based on damage
 	label.modulate = get_damage_color(dmg)
 
-	# Scale based on damage (Smash feel)
 	var scale_amount = 1 + (dmg / 200.0)
+
 	label.scale = Vector2(scale_amount, scale_amount)
 
-# --- DAMAGE COLOR SYSTEM ---
+# =========================
+# DAMAGE COLORS
+# =========================
 func get_damage_color(dmg):
 
 	if dmg < 50:
-		return Color(1, 1, 1) # White
+		return Color.WHITE
 
 	elif dmg < 100:
-		return Color(1, 1, 0) # Yellow
+		return Color.YELLOW
 
 	elif dmg < 150:
-		return Color(1, 0.5, 0) # Orange
+		return Color.ORANGE
 
 	else:
-		return Color(1, 0, 0) # Red
-
-# Lives UI
-	if player1 != null:
-		p1_stocks.text = "● ● ●"
-
-	if player2 != null:
-		p2_stocks.text = "● ● ●"
-
-# Win System
-	if player1.stocks <= 0:
-		print("PLAYER 2 WINS")
-
-	if player2.stocks <= 0:
-		print("PLAYER 1 WINS")
+		return Color.RED
